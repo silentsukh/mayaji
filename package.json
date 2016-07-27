@@ -11,14 +11,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/silentsukh/twatter.git"
+    "url": "git+https://github.com/silentsukh/mayaji.git"
   },
   "author": "SSD",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/silentsukh/twatter/issues"
+    "url": "https://github.com/silentsukh/mayaji/issues"
   },
-  "homepage": "https://github.com/silentsukh/twatter#readme",
+  "homepage": "https://github.com/silentsukh/mayaji#readme",
   "devDependencies": {
     "babel-preset-es2015": "^6.9.0",
     "babel-preset-react": "^6.5.0",
