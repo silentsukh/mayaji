@@ -1,7 +1,7 @@
 {
-  "name": "twatter",
+  "name": "Mayaji",
   "version": "1.0.0",
-  "description": "Twitter clone using React.js and ES6",
+  "description": "IG account management app",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
