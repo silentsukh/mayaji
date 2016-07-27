@@ -1,3 +1,172 @@
+export default class IG {
+  constructor(){
+
+    // Default API gateway
+    this.urlRoot = "https://demo-api.ig.com/gateway/deal";
+
+    // Variables
+    this.apiKey = "";
+    this.accountId = null;
+    this.account_token = null;
+    this.client_token = null;
+    this.lsEndpoint = null;
+    this.lsClient;
+    this.ticketSubscription;
+    this.accountSubscription;
+  }
+
+  login(apiKey, username, password) {
+
+     // Get username and password from user interface fields
+     this.apiKey = apiKey;
+     let identifier = username;
+     let password = password;
+
+     if (this.apiKey=="" || identifier=="" || password=="") {
+         return false;
+     }
+
+     password = encryptedPassword(password);
+     console.log("Encrypted password " + password);
+
+     // Create a login request, ie a POST request to /session
+     let req = new Request();
+     req.method = "POST";
+     req.url = urlRoot + "/session";
+
+     // Set up standard request headers, i.e. the api key, the request content type (JSON), 
+     // and the expected response content type (JSON)
+     req.headers = {
+        "Content-Type": "application/json; charset=UTF-8",
+        "Accept": "application/json; charset=UTF-8",
+        "X-IG-API-KEY": apiKey,
+        "Version": "2"
+     };
+
+     // Set up the request body with the user identifier (username) and password
+     let bodyParams = {};
+     bodyParams["identifier"] = identifier;
+     bodyParams["password"] = password;
+     bodyParams["encryptedPassword"] = true;
+     req.body = JSON.stringify(bodyParams);
+
+     // Send the request via a Javascript AJAX call
+     try {
+        $.ajax({
+           type: req.method,
+           url: req.url,
+           data: req.body,
+           headers: req.headers,
+           async: false,
+           mimeType: req.binary ? 'text/plain; charset=x-user-defined' : null,
+           success: function (response, status, data) {
+
+              // Successful login 
+              // Extract account and client session tokens, active account id, and the Lightstreamer endpoint,
+              // as these will be required for subsequent requests
+              this.account_token = data.getResponseHeader("X-SECURITY-TOKEN");
+              console.log("X-SECURITY-TOKEN: " + account_token);
+              this.client_token = data.getResponseHeader("CST");
+              console.log("CST: " + client_token);
+              this.accountId = response.currentAccountId;
+              this.lsEndpoint = response.lightstreamerEndpoint;
+
+              // Show logged in status message on screen
+           },
+           error: function (response, status, error) {
+
+              // Login failed, usually because the login id and password aren't correct
+              console.log(response);
+           }
+        });
+     } catch (e) {
+        console.log(e);
+     }
+
+      return true;
+
+  }
+
+/**
+ * Encryption function
+ */
+
+  encryptedPassword(password) {
+
+      let key = encryptionKey();
+
+      let asn, tree,
+      rsa = new pidCrypt.RSA(),
+      decodedKey = pidCryptUtil.decodeBase64(key.encryptionKey);
+
+      asn = pidCrypt.ASN1.decode(pidCryptUtil.toByteArray(decodedKey));
+      tree = asn.toHexTree();
+
+      rsa.setPublicKeyFromASN(tree);
+
+      return pidCryptUtil.encodeBase64(pidCryptUtil.convertFromHex(rsa.encrypt(password += '|' + key.timeStamp)))
+
+  }
+
+  /*
+   * Function to connect to Lightstreamer
+   */
+  connectToLightstreamer() {
+
+        // Instantiate Lightstreamer client instance
+        console.log("Connecting to Lighstreamer: " + this.lsEndpoint);
+        this.lsClient = new LightstreamerClient(this.lsEndpoint);
+
+        // Set up login credentials: client
+        this.lsClient.connectionDetails.setUser(this.accountId);
+
+        let password = "";
+        if (this.client_token) {
+           password = "CST-" + this.client_token;
+        }
+        if (this.client_token && this.account_token) {
+           password = password + "|";
+        }
+        if (this.account_token) {
+           password = password + "XST-" + this.account_token;
+        }
+        console.log(" LSS login " + this.accountId + " - " + password);
+        this.lsClient.connectionDetails.setPassword(password);
+
+        // Add connection event listener callback functions
+        this.lsClient.addListener({
+           onListenStart: function () {
+              console.log('Lightstreamer client - start listening');
+           },
+           onStatusChange: function (status) {
+              console.log('Lightstreamer connection status:' + status);
+           }
+        });
+
+        // Allowed bandwidth in kilobits/s
+        //lsClient.connectionOptions.setMaxBandwidth();
+
+        // Connect to Lightstreamer
+        this.lsClient.connect();
+  }
+
+}
+
+/*
+ * Request class
+ */
+class Request {
+  constructor(o) {
+    this.headers = {"Content-Type": "application/json; charset=UTF-8", "Accept": "application/json; charset=UTF-8"};
+    this.body = "";
+    this.method = "";
+    this.url = "";
+  }
+}
+
+
+
+
 /*
  * Copyright (C) 2014 IG Group (webapisupport@ig.com)
  *
@@ -17,15 +186,6 @@
 var urlRoot = "https://demo-api.ig.com/gateway/deal";
 
 var url = window.location.href;
-
-// If deployed to a labs environment, override the default demo urlRoot
-var env = url.match("http:\/\/(.*)-labs.ig.com");
-
-if (env && env.length>1) {
-    var envOverride = env[1].toLowerCase();
-    urlRoot = urlRoot.replace("demo", envOverride);
-	console.log("Overriding urlRoot with: " + urlRoot);
-}
 
 // Globals variables
 var accountId = null;
@@ -969,28 +1129,14 @@ $('#erroralert-dismiss').click(function () {
 });
 
 $('#sell_button').click(function () {
-   $('#sell_button').addClass("glowing-border-on");
-   $('#sell_button').removeClass("glowing-border-off");
-   $('#buy_button').addClass("glowing-border-off");
-   $('#buy_button').removeClass("glowing-border-on");
 
    $('#trade_direction').val("-");
 });
 
 $('#buy_button').click(function () {
-   $('#buy_button').addClass("glowing-border-on");
-   $('#buy_button').removeClass("glowing-border-off");
-   $('#sell_button').addClass("glowing-border-off");
-   $('#sell_button').removeClass("glowing-border-on");
 
    $('#trade_direction').val("+");
 });
 
 
-function showTradingPane() {
-   $('#landing').addClass("container-hidden");
-   $('#landing').removeClass("container");
-   $('#container').removeClass("container-hidden");
-   $('#container').addClass("container");
-}
 });
