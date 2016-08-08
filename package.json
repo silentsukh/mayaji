@@ -27,9 +27,11 @@
     "cookies-js": "^1.2.2",
     "lite-server": "^2.2.2",
     "nlp_compromise": "^6.5.0",
-    "react": "^15.0.1",
+    "react": "^15.2.1",
     "react-addons-css-transition-group": "^15.2.1",
-    "react-dom": "^15.0.1",
+    "react-dom": "^15.2.1",
+    "react-redux": "^4.4.5",
+    "redux": "^3.5.2",
     "stripify": "^4.0.0",
     "syncano": "^1.0.22",
     "watchify": "^3.7.0"

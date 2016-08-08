@@ -20454,9 +20454,13 @@ var MayajiApp = function (_React$Component) {
 		key: 'render',
 		value: function render() {
 			return _react2.default.createElement(
-				'h1',
+				'div',
 				null,
-				'Welcome back!'
+				_react2.default.createElement(
+					'h1',
+					null,
+					'Welcome back!'
+				)
 			);
 		}
 	}]);

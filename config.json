@@ -1,7 +1,0 @@
-config = {
-	"apiKey":"4b58726b15e671ddba0a2d569fff23c4120e9bf9",
-	"instanceName":"dry-sunset-6624",
-	"channelName":"twatter-stream",
-	"postClassName":"post",
-	"keywordsClassName":"keywords"
-}

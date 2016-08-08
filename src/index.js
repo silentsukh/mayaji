@@ -7,7 +7,9 @@ class MayajiApp extends React.Component {
 	}
 	render() {
 		return (
-			<h1>Welcome back!</h1>
+			<div>
+				<h1>Welcome back!</h1>
+			</div>
 		);
 	}
 }
