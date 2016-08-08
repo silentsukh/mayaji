@@ -72,6 +72,7 @@ export default class IG {
               this.accountId = response.currentAccountId;
               this.lsEndpoint = response.lightstreamerEndpoint;
               // Show logged in status message on screen
+              return true;
            },
            error: (response, status, error) => {
 
@@ -83,7 +84,7 @@ export default class IG {
         console.log(e);
      }
 
-      return true;
+      return false;
 
   }
 

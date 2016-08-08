@@ -1314,7 +1314,6 @@ module.exports = shouldUseNative() ? Object.assign : function (target, source) {
 
 },{}],28:[function(require,module,exports){
 // shim for using process in browser
-
 var process = module.exports = {};
 
 // cached from whatever global is present so that test runners that stub it
@@ -1326,21 +1325,35 @@ var cachedSetTimeout;
 var cachedClearTimeout;
 
 (function () {
-  try {
-    cachedSetTimeout = setTimeout;
-  } catch (e) {
-    cachedSetTimeout = function () {
-      throw new Error('setTimeout is not defined');
+    try {
+        cachedSetTimeout = setTimeout;
+    } catch (e) {
+        cachedSetTimeout = function () {
+            throw new Error('setTimeout is not defined');
+        }
     }
-  }
-  try {
-    cachedClearTimeout = clearTimeout;
-  } catch (e) {
-    cachedClearTimeout = function () {
-      throw new Error('clearTimeout is not defined');
+    try {
+        cachedClearTimeout = clearTimeout;
+    } catch (e) {
+        cachedClearTimeout = function () {
+            throw new Error('clearTimeout is not defined');
+        }
     }
-  }
 } ())
+function runTimeout(fun) {
+    if (cachedSetTimeout === setTimeout) {
+        return setTimeout(fun, 0);
+    } else {
+        return cachedSetTimeout.call(null, fun, 0);
+    }
+}
+function runClearTimeout(marker) {
+    if (cachedClearTimeout === clearTimeout) {
+        clearTimeout(marker);
+    } else {
+        cachedClearTimeout.call(null, marker);
+    }
+}
 var queue = [];
 var draining = false;
 var currentQueue;
@@ -1365,7 +1378,7 @@ function drainQueue() {
     if (draining) {
         return;
     }
-    var timeout = cachedSetTimeout.call(null, cleanUpNextTick);
+    var timeout = runTimeout(cleanUpNextTick);
     draining = true;
 
     var len = queue.length;
@@ -1382,7 +1395,7 @@ function drainQueue() {
     }
     currentQueue = null;
     draining = false;
-    cachedClearTimeout.call(null, timeout);
+    runClearTimeout(timeout);
 }
 
 process.nextTick = function (fun) {
@@ -1394,7 +1407,7 @@ process.nextTick = function (fun) {
     }
     queue.push(new Item(fun, args));
     if (queue.length === 1 && !draining) {
-        cachedSetTimeout.call(null, drainQueue, 0);
+        runTimeout(drainQueue);
     }
 };
 
@@ -20421,6 +20434,71 @@ module.exports = validateDOMNesting;
 module.exports = require('./lib/React');
 
 },{"./lib/React":55}],172:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+var _react = require("react");
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var LoginForm = function (_React$Component) {
+	_inherits(LoginForm, _React$Component);
+
+	function LoginForm(props) {
+		_classCallCheck(this, LoginForm);
+
+		return _possibleConstructorReturn(this, Object.getPrototypeOf(LoginForm).call(this, props));
+	}
+
+	_createClass(LoginForm, [{
+		key: "render",
+		value: function render() {
+			return _react2.default.createElement(
+				"form",
+				{ role: "form" },
+				_react2.default.createElement(
+					"div",
+					{ className: "form-group" },
+					_react2.default.createElement("input", { type: "text", className: "form-control", placeholder: "API Key" })
+				),
+				_react2.default.createElement(
+					"div",
+					{ className: "form-group" },
+					_react2.default.createElement("input", { type: "text", className: "form-control", placeholder: "Username" })
+				),
+				_react2.default.createElement(
+					"div",
+					{ className: "form-group" },
+					_react2.default.createElement("input", { type: "text", className: "form-control", placeholder: "Password" })
+				),
+				_react2.default.createElement(
+					"div",
+					{ className: "form-group" },
+					_react2.default.createElement("input", { type: "submit", value: "Login", className: "btn btn-primary" })
+				)
+			);
+		}
+	}]);
+
+	return LoginForm;
+}(_react2.default.Component);
+
+exports.default = LoginForm;
+
+},{"react":171}],173:[function(require,module,exports){
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
@@ -20432,6 +20510,10 @@ var _react2 = _interopRequireDefault(_react);
 var _reactDom = require('react-dom');
 
 var _reactDom2 = _interopRequireDefault(_reactDom);
+
+var _LoginForm = require('./components/LoginForm');
+
+var _LoginForm2 = _interopRequireDefault(_LoginForm);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -20456,11 +20538,7 @@ var MayajiApp = function (_React$Component) {
 			return _react2.default.createElement(
 				'div',
 				null,
-				_react2.default.createElement(
-					'h1',
-					null,
-					'Welcome back!'
-				)
+				_react2.default.createElement(_LoginForm2.default, null)
 			);
 		}
 	}]);
@@ -20472,4 +20550,4 @@ var MayajiApp = function (_React$Component) {
 	_reactDom2.default.render(_react2.default.createElement(MayajiApp, null), document.getElementById('content'));
 })(window);
 
-},{"react":171,"react-dom":29}]},{},[172]);
+},{"./components/LoginForm":172,"react":171,"react-dom":29}]},{},[173]);

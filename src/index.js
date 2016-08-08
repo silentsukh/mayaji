@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import LoginForm from './components/LoginForm';
 
 class MayajiApp extends React.Component {
 	constructor(props) {
@@ -8,7 +9,7 @@ class MayajiApp extends React.Component {
 	render() {
 		return (
 			<div>
-				<h1>Welcome back!</h1>
+				<LoginForm />
 			</div>
 		);
 	}
