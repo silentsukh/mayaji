@@ -1,3 +1,4 @@
+import '../sass/index.scss';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import LoginForm from './components/LoginForm';
@@ -15,9 +16,9 @@ class MayajiApp extends React.Component {
 	}
 }
 
-(function(window) {
+(function() {
 	ReactDOM.render(
 		<MayajiApp />,
 		document.getElementById('content')
 	);
-})(window);
+})();
